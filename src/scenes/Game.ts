@@ -20,5 +20,9 @@ export default class Demo extends Phaser.Scene {
       yoyo: true,
       repeat: -1
     });
+
+    this.input.on('pointerdown', () => {
+      this.scene.start('TestScene');
+    })
   }
 }
