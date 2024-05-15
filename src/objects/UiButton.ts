@@ -1,16 +1,16 @@
 import { Scene } from "phaser";
 
 export class UiButton extends Phaser.GameObjects.Container {
-    private overImage: Phaser.GameObjects.Image;
+    //private overImage: Phaser.GameObjects.Image;
     private upImage: Phaser.GameObjects.Image;
     private overTint: number;
     private pressedTint: number;
     private textField: Phaser.GameObjects.Text;
     
-    constructor(scene: Scene, x: number, y: number, overTexture: string, upTexture: string, btnText?: string){
+    constructor(scene: Scene, x: number, y: number, overTexture: string, upTexture: string, scale: number, btnText?: string){
         super(scene, x, y);
 
-        this.overImage = scene.add.image(0, 0, overTexture);
+        //this.overImage = scene.add.image(0, 0, overTexture);
         this.upImage = scene.add.image(0, 0, upTexture);
         this.textField = scene.add.text(0, 0, '');
 
@@ -27,6 +27,8 @@ export class UiButton extends Phaser.GameObjects.Container {
             this.textField.text = btnText;
             this.textField.setActive(true);
         }
+
+        this.scale = scale;
 
         this.setInteractive()
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OVER, () => {
