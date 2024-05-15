@@ -1,3 +1,3 @@
-interface Playable {
+interface IPlayable {
     
 }

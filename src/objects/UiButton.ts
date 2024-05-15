@@ -35,10 +35,26 @@ export class UiButton extends Phaser.GameObjects.Container {
                 this.upImage.tint = this.overTint;
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-                this.upImage.tint = 0xffffff;
+                if(this.active) {
+                    this.upImage.tint = 0xffffff;
+                }                
             })
             .on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
                 this.upImage.tint = this.pressedTint;
             });
+    }
+
+    public deactivate() {
+        this.setActive(false);
+        this.disableInteractive();
+        this.alpha = 0.5;
+        this.upImage.tint = 0x777777;
+    }
+
+    public activate() {
+        this.setActive(true);
+        this.setInteractive();
+        this.alpha = 1;
+        this.upImage.tint = 0xffffff;
     }
 }

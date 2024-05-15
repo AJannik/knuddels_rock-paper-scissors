@@ -1,9 +1,14 @@
 import Phaser from 'phaser';
 import { Player } from '../objects/Player';
 import { UiButton } from '../objects/UiButton';
+import { Rock } from '../objects/playables/Rock';
+import { Paper } from '../objects/playables/Paper';
+import { Scissors } from '../objects/playables/Scissors';
+import { NPC } from '../objects/NPC';
 
 export default class GameScene extends Phaser.Scene {
-  private players: Player[];
+  private player: IPlayer;
+  private npc: IPlayer;
   private rockBtn!: UiButton;
   private paperBtn!: UiButton;
   private scissorsBtn!: UiButton;
@@ -11,7 +16,8 @@ export default class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
 
-    this.players = [new Player(false), new Player(true)];
+    this.player = new Player();
+    this.npc = new NPC([new Rock(), new Paper(), new Scissors()]);
   }
 
   preload() {
@@ -27,19 +33,28 @@ export default class GameScene extends Phaser.Scene {
     this.scissorsBtn = new UiButton(this, 500, 300, 'player_scissors', 'player_scissors', 0.2);
 
     this.add.existing(this.rockBtn).on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-      console.log('pressed');
-    });
-    this.add.existing(this.paperBtn).on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-      console.log('pressed');
-    });
-    this.add.existing(this.scissorsBtn).on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
-      console.log('pressed');
+      this.player.setPlayed(new Rock());
+      this.deactivateSelectionBtns();
     });
 
-    
+    this.add.existing(this.paperBtn).on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+      this.player.setPlayed(new Paper());
+      this.deactivateSelectionBtns();
+    });
+
+    this.add.existing(this.scissorsBtn).on(Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN, () => {
+      this.player.setPlayed(new Scissors());
+      this.deactivateSelectionBtns();
+    });
 
     this.input.on('pointerdown', () => {
       //this.scene.start('TestScene');
     })
+  }
+
+  private deactivateSelectionBtns() {
+    this.rockBtn.deactivate();
+    this.paperBtn.deactivate();
+    this.scissorsBtn.deactivate();
   }
 }
