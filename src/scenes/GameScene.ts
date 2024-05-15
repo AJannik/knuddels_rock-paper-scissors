@@ -18,12 +18,12 @@ export default class GameScene extends Phaser.Scene {
   private rockBtn!: UiButton;
   private paperBtn!: UiButton;
   private scissorsBtn!: UiButton;
-  private npcPlayedTxt!: Phaser.GameObjects.Text;
   private resultTxt!: Phaser.GameObjects.Text;
   private ruleSet: IRuleSet;
   private playerImage!: RoundStartAnimation;
   private npcImage!: RoundStartAnimation;
   private scoreTxt!: Phaser.GameObjects.Text;
+  private smokeAnim!: Phaser.GameObjects.Sprite;
   
   constructor() {
     super('GameScene');
@@ -37,6 +37,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('player_rock', 'assets/playables/player_rock.png');
     this.load.image('player_paper', 'assets/playables/player_paper.png');
     this.load.image('player_scissors', 'assets/playables/player_scissors.png');
+    this.load.spritesheet('smoke_sheet', 'assets/Smoke_4_512.png', {frameWidth: 512, frameHeight: 512})
   }
 
   create() {
@@ -49,12 +50,9 @@ export default class GameScene extends Phaser.Scene {
     this.npcImage = new RoundStartAnimation(this, 580, 200, 'player_rock', -0.33);
     this.add.existing(this.npcImage);
 
-    this.npcPlayedTxt = this.add.text(300, 60, '');
-    this.npcPlayedTxt.z = 10;
-    this.npcPlayedTxt.setColor("#000000");
-    this.resultTxt = this.add.text(300, 100, '');
+    this.resultTxt = this.add.text(360, 100, 'text', {fontFamily: "Georgia", fontSize: 40, color: "#000000"});
     this.resultTxt.z = 10;
-    this.resultTxt.setColor("#000000");
+    this.resultTxt.visible = false;
 
     this.scoreTxt = this.add.text(250, 550, "Player: 0 | Computer: 0", {fontFamily: "Georgia", fontSize: 32, color: "#000000"});
 
@@ -70,12 +68,24 @@ export default class GameScene extends Phaser.Scene {
       this.playerSelectBtn(new Scissors());
     });
 
-    this.input.on('pointerdown', () => {
-      //this.scene.start('TestScene');
-    })
+    this.anims.create({
+      key: 'smoke',
+      frames: this.anims.generateFrameNumbers('smoke_sheet', { start:0 , end: 24}),
+      frameRate: 25,
+      repeat: 0
+    });
+
+    this.smokeAnim = this.add.sprite(300, 300, "");
+    this.smokeAnim.scale = 6;
+    this.smokeAnim.visible = false;
+
+    this.smokeAnim.on(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+      this.smokeAnimComplete();
+    });
   }
 
   private playerSelectBtn(selected: IPlayable) {
+    this.resultTxt.visible = false;
     this.player.setPlayed(selected);
     this.deactivateSelectionBtns();
     this.play();
@@ -94,8 +104,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   private play() {
-    var npcPlayed = this.npc.getPlayed();    
-    this.npcPlayedTxt.text = npcPlayed.name;
+    var npcPlayed = this.npc.getPlayed();
 
     this.playerImage.onComplete = () => {
       this.roundComplete(npcPlayed);
@@ -105,23 +114,32 @@ export default class GameScene extends Phaser.Scene {
     this.npcImage.startAnimation(npcPlayed.sprite);
   }
 
+  private smokeAnimComplete() {
+    this.resultTxt.visible = true;
+    this.activateSelectionBtns();
+    this.scoreTxt.text = "Player: " + this.player.getScore() + " | Computer: " + this.npc.getScore();
+  }
+
   private roundComplete(npcPlayed: IPlayable) {
     var result = this.player.hasWon(npcPlayed);
     switch (result) {
       case GameResult.Lost:
+        this.smokeAnim.tint = 0x111111;
         this.resultTxt.text = "Lost!";
         this.npc.incrementScore();
         break;
       case GameResult.Won:
+        this.smokeAnim.tint = 0x99ff11;
         this.resultTxt.text = "Won!";
         this.player.incrementScore();
         break;
       case GameResult.Tie:
+        this.smokeAnim.tint = 0x990011;
         this.resultTxt.text = "Tie!";
         break;
     }
 
-    this.activateSelectionBtns();
-    this.scoreTxt.text = "Player: " + this.player.getScore() + " | Computer: " + this.npc.getScore();
+    this.smokeAnim.visible = true;
+    this.smokeAnim.play("smoke");
   }
 }
