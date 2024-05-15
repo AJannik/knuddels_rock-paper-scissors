@@ -1,3 +1,3 @@
-interface IPlayable {
-    
+export interface IPlayable {
+    name: string;
 }
