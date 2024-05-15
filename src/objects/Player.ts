@@ -7,16 +7,20 @@ import { Undecided } from "./playables/Undecided";
 export class Player implements IPlayer {
     private played: IPlayable;
     private ruleSet: IRuleSet;
+    private score: number = 0;
 
     constructor(ruleSet: IRuleSet) {
         this.played = new Undecided();
         this.ruleSet = ruleSet;
     }
+    getScore(): number {
+        return this.score;
+    }
+    incrementScore(): void {
+        this.score++;
+    }
 
     hasWon(other: IPlayable): GameResult {
-        console.log(this.played);
-        console.log(other);
-        
         return this.ruleSet.evaluate(this.played, other);
     }
 

@@ -5,4 +5,6 @@ export interface IPlayer {
     setPlayed(playable: IPlayable): void;
     getPlayed() : IPlayable;
     hasWon(other: IPlayable): GameResult;
+    getScore() : number;
+    incrementScore() : void;
 }

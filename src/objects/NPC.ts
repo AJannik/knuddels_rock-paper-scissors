@@ -8,11 +8,18 @@ export class NPC implements IPlayer {
     private played: IPlayable;
     private playables: IPlayable[];
     private ruleSet: IRuleSet;
+    private score: number = 0;
 
     constructor(ruleSet: IRuleSet) {
         this.ruleSet = ruleSet;
         this.played = new Undecided();
         this.playables = this.ruleSet.getNpcSet();
+    }
+    getScore(): number {
+        return this.score;
+    }
+    incrementScore(): void {
+        this.score++;
     }
 
     hasWon(other: IPlayable): GameResult {
